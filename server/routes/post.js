@@ -16,7 +16,6 @@ router.get('/all', async (req, res) =>{
 router.get('/', async (req, res) =>{
     const user = req.user
     const userProfile = req.user.dataValues.profile
-    //console.log(userProfile.id)
     const { friends } = await getRelationship({ id:userProfile.id, type: "friend" })
     const friendsId = friends.map((item1) => item1.id)
     const postFriend = await Profile.findAll({ where: {id: {[Op.in]: friendsId}}, include: [
@@ -26,7 +25,21 @@ router.get('/', async (req, res) =>{
             ]}
         ]}
     ] })
-    posts = postResponse(postFriend, user)
+    const posts = postResponse(postFriend, user)
+    res.json(posts)
+})
+
+router.get('/:id', async (req, res) =>{
+    const user = req.user
+    const id = req.params.id
+    const rawPosts = await Profile.findAll({ where: { userId: id }, include: [
+        {model: User, as:"user", include: [
+            {model: Post, as: "post", attributes: ["id", "title", "userId", "createdAt"], include: [
+                "imagePost", "userLike"
+            ]}
+        ]}
+    ] })
+    const posts = postResponse(rawPosts, user)
     res.json(posts)
 })
 
@@ -59,15 +72,18 @@ router.post('/create', async (req, res) =>{
     res.json(responseObj)
 })
 
-router.delete('/delete/:id', async (req, res) =>{
-    const id = req.params.id
+router.put('/delete', async (req, res) =>{
+    const id = req.body.id
     const user = req.user
 
-    const post = await db.sequelize.transaction((t) =>{
-        return Post.destroy({ where: {id:id, userId: user.id} })
-    })
+    const post = await Post.findOne({ where: {id: id, userId: user.id} })
+    if (post !== null){
+        await post.setUserLike([])
+        await ImagePost.destroy({ where: {postId: id} })
+        await Post.destroy({ where: {id:id, userId: user.id} })
+    }
 
-    res.redirect('/post')
+    res.redirect('/post/'+user.id)
 })
 
 router.put('/like', async (req, res) =>{

@@ -1,5 +1,5 @@
 {
-  "name": "penpalss",
+  "name": "PenPalsServer",
   "version": "1.0.0",
   "description": "test",
   "main": "index.js",
@@ -22,14 +22,11 @@
     "touch": "^3.1.0"
   },
   "scripts": {
-    "test":"echo \"Error:no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node ./app.js",
+    "nodemon": "nodemon ./app.js localhost 3000",
+    "db:makemigrations": "node ./node_modules/sequelize-auto-migrations/bin/makemigration.js"
   },
   "devDependencies": {
     "sequelize-cli": "^6.2.0"
-  },
-  "engines": {
-    "node": "12.18.3",
-    "npm" : "6.14.6"
   }
 }
