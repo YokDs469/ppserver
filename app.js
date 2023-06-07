@@ -27,9 +27,10 @@ app.use('/set-data', passport.authenticate('jwt', {session: false}), require('./
 app.use('/message', passport.authenticate('jwt', {session:false}), require('./server/routes/chat'))
 app.use('/notification', passport.authenticate('jwt', {session:false}), require('./server/routes/notification'))
 app.use('/image', require('./server/routes/image'))
+app.use('/no-auth', require('./server/routes/noAuth'))
 
 //io.listen(http,connected(io))
 
-http.listen(3000, () => {
+http.listen(8000, () => {
     console.log('Start server at port 3000.')
 })
