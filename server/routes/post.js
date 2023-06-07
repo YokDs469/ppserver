@@ -8,9 +8,25 @@ const postResponse = require('../tools/postResponse')
 const { Post, Profile, User, ImagePost, Like } = db
 
 router.get('/all', async (req, res) =>{
-    const posts = await Post.findAll({include:["imagePost"]})
-    console.log(posts[0].setImagePost)
-    res.json(posts)
+    // const posts = await Post.findAll({include:["imagePost"]})
+
+    // res.json(posts)
+    const postFriend = await Profile.findAll({ include: [
+        {model: User, as:"user", attributes: {exclude: ['password', 'updatedAt', 'createdAt']}, include: [
+            {model: Post, as: "post", attributes: ["id", "title", "userId", "content", "createdAt"], include: [
+                "imagePost"
+            ]}
+        ]}
+    ] })
+    const mapping = (postFriend.map((item) => {
+        const data = item.dataValues
+        const post = data.user.dataValues.post
+        let result = {...data, ...data.user.dataValues, post}
+        delete result['user'];
+        return result
+    }))
+
+    res.json(mapping)
 })
 
 router.get('/', async (req, res) =>{
@@ -49,7 +65,7 @@ router.post('/create', async (req, res) =>{
     let imagePost = { url: null }
 
     const post = await db.sequelize.transaction((t) =>{
-        return Post.create({...data, userId: user.id}, {transaction: t})
+        return Post.create({...data, userId: user.id, id: null}, {transaction: t})
     })
     if (data.imagePost !== "" && data.imagePost !== undefined){
         imagePost = await db.sequelize.transaction((t) =>{
@@ -72,7 +88,7 @@ router.post('/create', async (req, res) =>{
     res.json(responseObj)
 })
 
-router.put('/delete', async (req, res) =>{
+router.delete('/delete', async (req, res) =>{
     const id = req.body.id
     const user = req.user
 
@@ -83,7 +99,7 @@ router.put('/delete', async (req, res) =>{
         await Post.destroy({ where: {id:id, userId: user.id} })
     }
 
-    res.redirect('/post/'+user.id)
+    res.json({ isSuccess: true })
 })
 
 router.put('/like', async (req, res) =>{
@@ -103,6 +119,16 @@ router.put('/like', async (req, res) =>{
     }
 
     res.json(post)
+})
+
+router.put('/update', async (req, res) =>{
+    const data = req.body
+
+    const result = await db.sequelize.transaction((t) =>{
+        return Post.update(data, { where: { id: data.id } }, {transaction: t})
+    })
+
+    res.json(result)
 })
 
 module.exports = router;

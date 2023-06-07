@@ -4,6 +4,10 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             allowNull: false
         },
+        content: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         userId: DataTypes.INTEGER
     })
     Post.associate = (models) => {

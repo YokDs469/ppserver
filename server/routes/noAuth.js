@@ -10,7 +10,7 @@ const { Post, Profile, User, ImagePost, Like } = db
 router.get('/post', async (req, res) =>{
     const postFriend = await Profile.findAll({ include: [
         {model: User, as:"user", attributes: {exclude: ['password', 'updatedAt', 'createdAt']}, include: [
-            {model: Post, as: "post", attributes: ["id", "title", "userId", "createdAt"], include: [
+            {model: Post, as: "post", attributes: ["id", "title", "userId", "content", "createdAt"], include: [
                 "imagePost"
             ]}
         ]}
@@ -24,6 +24,16 @@ router.get('/post', async (req, res) =>{
     }))
 
     res.json(mapping)
+})
+
+router.put('/post/update', async (req, res) =>{
+    const data = req.body
+
+    const result = await db.sequelize.transaction((t) =>{
+        return Post.update(data, { where: { id: data.id } }, {transaction: t})
+    })
+
+    res.json(result)
 })
 
 module.exports = router;

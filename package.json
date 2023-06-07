@@ -24,7 +24,8 @@
   "scripts": {
     "start": "node ./app.js",
     "nodemon": "nodemon ./app.js localhost 3000",
-    "db:makemigrations": "node ./node_modules/sequelize-auto-migrations/bin/makemigration.js"
+    "db:makemigrations": "node ./node_modules/sequelize-auto-migrations/bin/makemigration.js",
+    "db:migrate": "npx sequelize-cli db:migrate"
   },
   "devDependencies": {
     "sequelize-cli": "^6.2.0"
