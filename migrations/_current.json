@@ -362,6 +362,11 @@
                     "field": "title",
                     "seqType": "Sequelize.STRING"
                 },
+                "content": {
+                    "allowNull": true,
+                    "field": "content",
+                    "seqType": "Sequelize.STRING"
+                },
                 "userId": {
                     "field": "userId",
                     "allowNull": true,
@@ -650,5 +655,5 @@
             "indexes": []
         }
     },
-    "revision": 26
+    "revision": 27
 }

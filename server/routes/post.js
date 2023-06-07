@@ -105,4 +105,14 @@ router.put('/like', async (req, res) =>{
     res.json(post)
 })
 
+router.put('/update', async (req, res) =>{
+    const data = req.body
+
+    const result = await db.sequelize.transaction((t) =>{
+        return Post.update(data, { where: { id: data.id } }, {transaction: t})
+    })
+
+    res.json(result)
+})
+
 module.exports = router;
