@@ -26,7 +26,7 @@ router.post('/login', (req, res, next) =>{
 })
 
 router.post('/register', async (req, res) =>{
-    const {username, password} = req.body
+    const {username, password, email} = req.body
     const { profile } = req.body
     const passwordHash = bcrypt.hashSync(password, 10)
     const exit = await User.findOne({attributes:['id'],where:{username: username}})
@@ -37,6 +37,7 @@ router.post('/register', async (req, res) =>{
         const createUser = await db.sequelize.transaction((t) =>{
             return User.create({
                 username: username,
+                email,
                 password: passwordHash
             })
         })

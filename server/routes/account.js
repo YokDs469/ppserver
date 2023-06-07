@@ -4,7 +4,7 @@ const db = require('../../models')
 const getProfile = require('../tools/getProfile')
 const { Op } = require('sequelize')
 
-const { Profile, Relationship, Tag, Category, FavTag } = db
+const { Profile, Relationship, Tag, Category, FavTag, User } = db
 
 router.get('/my-profile', async (req, res) =>{
     const profile = await getProfile({profileQuery: {userId: req.user.id}, otherQuery: {user: req.user}})
@@ -19,8 +19,10 @@ router.get('/profile/:id', async (req, res) =>{
 
 router.put('/update', async (req, res) =>{
     const data = req.body
+    console.log(req.user.id)
 
     const profile = await db.sequelize.transaction((t) =>{
+        User.update({ email: data?.email }, { where: { id: req.user.id } }, {transaction: t})
         return Profile.update(data, { where: { userId: req.user.id } }, {transaction: t})
     })
 
