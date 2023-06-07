@@ -31,6 +31,6 @@ app.use('/no-auth', require('./server/routes/noAuth'))
 
 //io.listen(http,connected(io))
 
-http.listen(3000, () => {
+http.listen(8000, () => {
     console.log('Start server at port 3000.')
 })
