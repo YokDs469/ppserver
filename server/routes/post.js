@@ -45,6 +45,21 @@ router.get('/', async (req, res) =>{
     res.json(posts)
 })
 
+router.get('/my-post', async (req, res) =>{
+    const user = req.user
+    console.log(user)
+
+    const rawPosts = await Profile.findAll({ where: { userId: user.id }, include: [
+        {model: User, as:"user", include: [
+            {model: Post, as: "post", attributes: ["id", "title", "content","userId", "createdAt"], include: [
+                "imagePost", "userLike"
+            ]}
+        ]}
+    ] })
+    const posts = postResponse(rawPosts, user)
+    res.json(posts)
+})
+
 router.get('/:id', async (req, res) =>{
     const user = req.user
     const id = req.params.id
