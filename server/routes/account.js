@@ -11,6 +11,15 @@ router.get('/my-profile', async (req, res) =>{
     res.json(...profile)
 })
 
+router.get('/my-account', async (req, res) =>{
+    const account = await User.findOne({ where:{id: req.user.id}, attributes: {exclude: ['password', 'updatedAt', 'createdAt', 'id']}, include:[
+        {model: Profile, as:"profile"}        
+    ]})
+    const result = {...account.dataValues, ...account.dataValues.profile.dataValues}
+    delete result['profile']
+    res.json(result)
+})
+
 router.get('/profile/:id', async (req, res) =>{
     const id = req.params.id
     const profile = await getProfile({profileQuery: { id }, otherQuery: {user: req.user}})
